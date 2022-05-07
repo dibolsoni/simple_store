@@ -6,12 +6,15 @@ import './assets/bootstrap/css/bootstrap.min.css'
 import './assets/fonts/fontawesome-all.min.css'
 import './assets/css/Navbar-With-Button.css'
 import './assets/css/styles.css'
+import {BrowserRouter} from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <React.StrictMode>
+        <BrowserRouter>
+            <App/>
+        </BrowserRouter>
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

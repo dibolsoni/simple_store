@@ -5,7 +5,7 @@ class ProductList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: 'Produtos',
+            title: 'Lista de Produtos',
             products: []
         }
     }
@@ -36,9 +36,9 @@ class ProductList extends Component {
         })
     }
 
-    makeRow(partialColumns) {
+    makeRow(partialColumns, key) {
         return (
-            <div className="row">
+            <div className="row" key={key}>
                 {partialColumns.map(col => col)}
             </div>
         )
@@ -48,7 +48,7 @@ class ProductList extends Component {
         let rows = []
         for (let i=0; i < columns.length; i+=3) {
             rows.push(
-                this.makeRow(columns.slice(i, i+3))
+                this.makeRow(columns.slice(i, i+3), `${i}-${i+3}`)
             )
         }
         return rows
@@ -62,7 +62,6 @@ class ProductList extends Component {
 
     render() {
         const {title} = this.state;
-        const view = this.makeView()
         return (
             <div className="container"
                  style={containerStyle}
