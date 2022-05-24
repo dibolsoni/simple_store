@@ -22,7 +22,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "deploy": "gh-pages -d build -r https://github.com/dibolsoni/simple_store.git",
+    "deploy": "gh-pages -d build -r http://github.com/dibolsoni/simple_store.git",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
