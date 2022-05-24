@@ -1,83 +1,71 @@
 import React, {Component} from 'react'
+import {decrementProduct, deleteProduct, incrementProduct} from "../store/shopping/actions";
+import {connect} from "react-redux";
 
 
 class ProductRow extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            product: {
-                index: '',
-                img: '',
-                name: '',
-                price: '',
-                quantity: 0,
-            }
-        }
-    }
-
-    componentDidMount(){
-        const {product} = this.props;
-        this.setState({
-            product: {...product}
-        })
-    }
-
-    incQuantity() {
-        this.setState({
-            product: {
-                ...this.state.product,
-                quantity: this.state.product.quantity + 1
-            }})
-    }
-
-    decQuantity() {
-        this.setState({
-            product: {
-                ...this.state.product,
-                quantity: this.state.product.quantity - 1
-            }})
+    handleDecrementProduct() {
+        const {product, deleteProduct, decrementProduct} = this.props;
+        const {quantity, id} = product;
+        if (quantity > 1)
+            decrementProduct(id)
+        else
+            deleteProduct(id)
     }
 
     render() {
-        const {index, img, name, price, quantity} = this.state.product;
+        const {incrementProduct, product} = this.props;
+        const {id, description, title, price, quantity} = product;
         const total = quantity * price;
         return (
-            <tr className="bg-success" key={`${name}-${index}`}>
-                <th>
-                    <img alt={name} src={img} />
-                    <p><strong style={{width: "21px"}}>{name}<br/></strong></p>
+            <tr className="bg-success">
+                <th style={{maxHeight: '100px'}}>
+                    <p><strong style={{width: "21px"}}>{title}<br/></strong></p>
+                    <span className={'text-muted'}>{description.slice(0, 35)}</span>
                 </th>
 
-                <td><strong>{price}</strong></td>
+                <td><strong>R${price.toFixed(2)}</strong></td>
                 <td className="mx-auto">
                     <div className="btn-group" role="group">
                         <button
-                            title={'Decrement Button'}
+                            title={'decrement'}
                             className="btn btn-info"
                             type="button"
-                            onClick={() => this.decQuantity()}
+                            onClick={() => this.handleDecrementProduct()}
                         >-
                         </button>
                         <button
-
+                            title={"quantity"}
                             className="btn btn-info"
                             type="button"
                         >{quantity}
                         </button>
                         <button
-                            title={'Increment Button'}
+                            title={'increment'}
                             className="btn btn-info"
                             type="button"
-                            onClick={() => this.incQuantity()}
+                            onClick={() => incrementProduct(id)}
                         >+
                         </button>
                     </div>
                 </td>
-                <td><strong>{total}</strong></td>
+                <td><strong>R${total.toFixed((2))}</strong></td>
             </tr>
         );
     }
 }
 
+const mapStateToProps = (state, props) => ({
+    product: {
+        ...state.products.find(prod => prod.id === props.product.id),
+        quantity: state.shopping_cart.find(prod => prod.id === props.product.id)?.quantity
+    }
+})
 
-export default ProductRow;
+const mapDispatchToProps = dispatch => ({
+    incrementProduct: (prod_id) => dispatch(incrementProduct(prod_id)),
+    decrementProduct: (prod_id) => dispatch(decrementProduct(prod_id)),
+    deleteProduct: (prod_id) => dispatch(deleteProduct(prod_id))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProductRow);

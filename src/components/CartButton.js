@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Link} from "react-router-dom";
 
 class CartButton extends Component {
     constructor(props) {
@@ -16,7 +17,7 @@ class CartButton extends Component {
         const {hasProducts} = this.props;
         const {className} = this.state.hasProducts[hasProducts];
         return (
-            <>
+            <Link to={'/carrinho-de-compras'}>
                 <button
                     className="btn btn-success"
                     type="button"
@@ -28,7 +29,7 @@ class CartButton extends Component {
                         aria-label={'shopping cart'}
                     ></i>
                 </button>
-            </>
+            </Link>
         );
     }
 }

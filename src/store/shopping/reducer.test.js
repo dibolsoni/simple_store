@@ -1,36 +1,64 @@
 import reducer, {initialState} from "./reducer";
-import {addProduct, deleteProduct} from "./actions";
+import {
+    addProduct,
+    decrementProduct,
+    deleteProduct,
+    doLoadProducts,
+    errorLoadProducts,
+    incrementProduct
+} from "./actions";
+import {loadedState} from "../mockStore";
 
-const product = {
-    img: './mockup/assets/img/JBL_TUNE 215TWS_Product Image_Black_Accessories.webp',
-    title: 'New Product',
-    subtitle: 'A great product',
-    text: 'this is a great product that u need to buy it',
-    price: '12123123',
-    hasStock: false
-}
+
 
 describe('test a shopping reducer', () => {
     it('initiate with default values', () => {
         const state = reducer(initialState, {type: 'init'})
-        expect(state).toBe(initialState)
+        expect(state).toStrictEqual(initialState)
     })
 
-    it('add product to the list', () => {
-        const state = reducer(initialState, addProduct(product))
-        expect(state.products).toHaveLength(1)
-        expect(state.products[0]).toBe(product)
+    it('add product to the shopping cart', () => {
+        const state = reducer(initialState, addProduct(1))
+        expect(state.shopping_cart).toHaveLength(1)
+        expect(state.shopping_cart[0])
+            .toStrictEqual({id: 1, quantity: 1})
     })
 
     it('delete product to the list', () => {
-        let state = reducer(initialState, addProduct(product))
-        const otherProduct = {
-            ...product,
-            title: 'other title'
-        }
-        state = reducer(state, deleteProduct(otherProduct))
-        expect(state.products).toHaveLength(1)
-        state = reducer(state, deleteProduct(product))
-        expect(state).toStrictEqual(initialState)
+        let state = reducer(initialState, addProduct(1))
+        state = reducer(state, addProduct(2))
+        state = reducer(state, deleteProduct(1))
+        expect(state.shopping_cart).toHaveLength(1)
+        expect(state.shopping_cart[0])
+            .toStrictEqual({id: 2, quantity: 1})
+    })
+
+    it('increment product quantity', () => {
+        let state = reducer(initialState, addProduct(1))
+        expect(state.shopping_cart[0].quantity).toBe(1)
+        state = reducer(state, incrementProduct(1))
+        state = reducer(state, incrementProduct(2))
+        expect(state.shopping_cart).toHaveLength(1)
+        expect(state.shopping_cart[0].quantity).toBe(2)
+    })
+
+    it('decrement product quantity', () => {
+        let state = reducer(initialState, addProduct(1))
+        state = reducer(state, incrementProduct(1))
+        expect(state.shopping_cart[0].quantity).toBe(2)
+        state = reducer(state, decrementProduct(1))
+        state = reducer(state, decrementProduct(5))
+        expect(state.shopping_cart).toHaveLength(1)
+        expect(state.shopping_cart[0].quantity).toBe(1)
+    })
+
+    it('loads products', () => {
+        let state = reducer(initialState, doLoadProducts(loadedState.products))
+        expect(state.products).toStrictEqual(loadedState.products)
+    })
+
+    it('handle error in load products', () => {
+        let state = reducer(initialState, errorLoadProducts('wrong url'))
+        expect(state.error).toBe('wrong url')
     })
 })

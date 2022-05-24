@@ -1,6 +1,16 @@
-import { configureStore } from '@reduxjs/toolkit'
-import shoppingReduceer from './shopping/reducer'
+import { legacy_createStore, applyMiddleware  } from 'redux'
+import createSagaMiddleware from 'redux-saga'
+import {composeWithDevTools} from 'redux-devtools-extension'
 
-export default configureStore({
-    reducer: shoppingReduceer,
-})
+import shoppingReducer from './shopping/reducer'
+import saga from './sagas'
+
+const sagaMiddleware = createSagaMiddleware()
+
+export default legacy_createStore(
+    shoppingReducer,
+    composeWithDevTools(applyMiddleware(sagaMiddleware))
+)
+
+sagaMiddleware.run(saga)
+

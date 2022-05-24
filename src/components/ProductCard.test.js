@@ -1,38 +1,37 @@
 import React from 'react'
-import {render, screen} from "@testing-library/react";
+import {fireEvent, waitFor, render, screen} from "@testing-library/react";
 import ProductCard from "./ProductCard";
+import {loadedState, mockStore} from "../store/mockStore";
+import {Provider} from "react-redux";
+import {addProduct} from "../store/shopping/actions";
 
-export const props = {
-    product: {
-        img: './mockup/assets/img/JBL_TUNE 215TWS_Product Image_Black_Accessories.webp',
-        title: 'New Product',
-        subtitle: 'A great product',
-        text: 'this is a great product that u need to buy it',
-        price: '12123123',
-        hasStock: false
-    }
-}
 
 describe('TestAProductCard', () => {
+    let store;
 
-
-    it('instantiate with valid props', () => {
-        const newProps = {...props,
-            product: {...props.product, hasStock: true}
-        }
-        render(<ProductCard {...newProps} />)
-        const {product} = props;
-        for (const prop of [product.title, product.text, product.subtitle, product.price]) {
-            screen.getByText(prop)
-        }
-        screen.getByAltText(/product/i)
-        const button = screen.getByRole('button')
-        expect(button).toBeEnabled()
+    beforeEach(() => {
+        store = mockStore(loadedState)
     })
 
-    it('disable button when dont have stock', () => {
-        render(<ProductCard {...props} />)
+    it('instantiate with valid props', () => {
+        render(
+            <Provider store={store}>
+                <ProductCard product={{id: 1}}/>
+            </Provider>
+        )
+        screen.getAllByTitle(/card of product/i)
+    })
+
+    it('add a product do shopping cart', async () => {
+        render(
+            <Provider store={store}>
+                <ProductCard product={{id: 1}}/>
+            </Provider>
+        )
         const button = screen.getByRole('button')
-        expect(button).not.toBeEnabled()
+        fireEvent.click(button)
+        const card = screen.getByTitle('card of product')
+        expect(card.className).toContain('border-success')
+
     })
 })

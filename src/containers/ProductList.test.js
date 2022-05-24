@@ -1,32 +1,25 @@
 import React from 'react'
 import {render, screen} from "@testing-library/react";
 import ProductList from "./ProductList";
-import {props as productProps} from '../components/ProductCard.test';
+import {mockStore, loadedState} from "../store/mockStore";
+import {Provider} from "react-redux";
 
-const {product} = productProps
-const props = {
-    products: [
-        product,
-        product
-    ]
-}
+
 describe('TestAProductList', () => {
-    test('instantiate with valid props', () => {
-        render(<ProductList {...props} />)
-        const products = screen.getAllByText(product.title)
-        expect(products).toHaveLength(2)
-    })
-    test('must have 2 rows and 3 columns', () => {
-        const newProps = {
-            ...props,
-            products: [
-                product,
-                product,
-                product,
-                product
-            ]
-        }
-        render(<ProductList {...newProps} />)
+    let store;
 
+    beforeEach(() => {
+        store = mockStore(loadedState)
     })
+
+    test('instantiate with valid props', async () => {
+        render(
+            <Provider store={store}>
+                <ProductList />
+            </Provider>
+        )
+        const products = await screen.findAllByText("New Product")
+        expect(products).toHaveLength(loadedState.products.length)
+    })
+
 })

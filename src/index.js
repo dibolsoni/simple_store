@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import './assets/bootstrap/css/bootstrap.min.css'
+import './assets/bootstrap/css/bootstrap.min.css';
 import './assets/fonts/fontawesome-all.min.css'
 import './assets/css/Navbar-With-Button.css'
 import './assets/css/styles.css'

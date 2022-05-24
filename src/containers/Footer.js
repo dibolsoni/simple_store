@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {Link} from "react-router-dom";
 
 class Footer extends Component {
     render() {
@@ -8,10 +9,10 @@ class Footer extends Component {
                      style={footerStyle}>
                     <ul className="list-inline font-monospace">
                         <li className="list-inline-item me-4">
-                            <a className="link-info" href="/">Produtos</a>
+                            <Link className="link-info" to="/">Produtos</Link>
                         </li>
                         <li className="list-inline-item me-4">
-                            <a className="link-info" href="/carrinho-de-compras">Carrinho de Compras</a>
+                            <Link className="link-info" to="/carrinho-de-compras">Carrinho de Compras</Link>
                         </li>
                     </ul>
                     <ul className="list-inline">

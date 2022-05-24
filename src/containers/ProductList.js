@@ -1,54 +1,54 @@
 import React, {Component} from 'react';
 import ProductCard from "../components/ProductCard";
+import {connect} from "react-redux";
+import {requestLoadProducts} from "../store/shopping/actions";
+import {CardGroup, Collapse, Fade, Row, Spinner} from "react-bootstrap";
 
-class ProductList extends Component {
+export class ProductList extends Component {
     constructor(props) {
         super(props);
         this.state = {
             title: 'Lista de Produtos',
-            products: []
         }
     }
 
-    componentDidMount() {
-        const {products} = this.props;
-        this.setState({
-            products: [...products]
-        })
-    }
 
     makeColumn(product, index) {
         return (
-            <div
-                className="col-md-4"
-                style={colStyle}
-                key={`column-${index}`}
-            >
-                <ProductCard product={product} />
-            </div>
+            <ProductCard key={`column-${index}`} product={{id: product.id}}/>
         )
     }
 
     makeColumns() {
-        const {products} = this.state;
+        const {products} = this.props;
         return products.map((product, index) => {
             return this.makeColumn(product, index)
         })
     }
 
     makeRow(partialColumns, key) {
+        const {products} = this.props;
         return (
-            <div className="row" key={key}>
-                {partialColumns.map(col => col)}
-            </div>
+            <Collapse
+                in={products.length > 0}
+                dimension="width"
+                mountOnEnter
+                appear
+                timeout={1000}
+                key={`row-${key}`}
+            >
+                <CardGroup >
+                    {partialColumns.map(col => col)}
+                </CardGroup>
+            </Collapse>
         )
     }
 
     makeRows(columns) {
         let rows = []
-        for (let i=0; i < columns.length; i+=3) {
+        for (let i = 0; i < columns.length; i += 3) {
             rows.push(
-                this.makeRow(columns.slice(i, i+3), `${i}-${i+3}`)
+                this.makeRow(columns.slice(i, i + 3), `${i}-${i + 3}`)
             )
         }
         return rows
@@ -62,17 +62,27 @@ class ProductList extends Component {
 
     render() {
         const {title} = this.state;
+        const {products} = this.props;
+        const hasProducts = products.length > 0
         return (
-            <div className="container"
-                 style={containerStyle}
-                 aria-label={'Product List'}
+            <div
+                key={"product-list"}
+                className="container"
+                style={containerStyle}
+                aria-label={'Product List'}
             >
-                <div className="row">
-                    <div className="col-md-12">
-                        <h1 style={titleStyle}>{title}</h1>
-                    </div>
+                <div className="row" key={"products-title"}>
+                    <h1 style={titleStyle}>{title}</h1>
                 </div>
-                {this.makeView()}
+                {hasProducts ?
+                    this.makeView()
+                    :
+                    <Row className={"justify-content-md-center"}>
+                        <Spinner animation={'border'} variant="primary">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                    </Row>
+                }
             </div>
         )
     }
@@ -88,9 +98,10 @@ const titleStyle = {
     paddingTop: '48px'
 }
 
-const colStyle = {
-    padding: '12px',
-}
+
+const mapStateToProps = (state) => ({
+    products: state.products
+})
 
 
-export default ProductList;
+export default connect(mapStateToProps)(ProductList);

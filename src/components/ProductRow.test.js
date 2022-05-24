@@ -1,36 +1,67 @@
+import React from "react";
 import {fireEvent, render, screen} from "@testing-library/react";
 import ProductRow from "./ProductRow";
+import {loadedState, mockStore} from "../store/mockStore";
+import {Provider} from "react-redux";
+import {decrementProduct, deleteProduct, incrementProduct} from "../store/shopping/actions";
+import {Table} from "react-bootstrap";
 
-const product = {
-    index: 1,
-    img: '',
-    name: 'produto 01',
-    price: '111',
-    quantity: 10,
-}
+const mockTable = children => (
+    <Table>
+        <tbody>
+            {children}
+        </tbody>
+    </Table>
+)
 
 describe('TestAProductRow', () => {
+    let store;
+
+    beforeEach(() => {
+        store = mockStore(loadedState)
+    })
+
     it('render with valid props', () => {
-        render(<ProductRow product={product} />)
-        screen.getByText(/produto 01/i)
-        screen.getByText(/^111$/i)
-        screen.getByText(/^10$/i)
-        screen.getByText(/^1110$/i)
+        render(
+            <Provider store={store}>
+                {mockTable(<ProductRow product={{id: 1}}/>)}
+            </Provider>
+        )
+        const product = loadedState.products.find(prod => prod.id === 1)
+        screen.getByText(product.title)
     })
 
     it('inc quantity', async () => {
-        render(<ProductRow product={product} />)
-        screen.getByText(/^10$/)
-        const incBtn = screen.getByTitle(/Increment Button/i)
-        await fireEvent.click(incBtn)
-        await screen.findByText(/^11$/)
+        render(
+            <Provider store={store}>
+                {mockTable(<ProductRow product={{id: 1}}/>)}
+            </Provider>
+        )
+        const incBtn = screen.getByTitle(/increment/i)
+        fireEvent.click(incBtn)
+        expect(store.getActions()[0]).toStrictEqual(incrementProduct(1))
+
     })
     it('dec quantity', async () => {
-        render(<ProductRow product={product} />)
-        screen.getByText(/^10$/)
-        const incBtn = screen.getByTitle(/Decrement Button/i)
-        await fireEvent.click(incBtn)
-        await screen.findByText(/^9$/)
+        render(
+            <Provider store={store}>
+                {mockTable(<ProductRow product={{id: 2}}/>)}
+            </Provider>
+        )
+        const decBtn = screen.getByTitle(/decrement/i)
+        fireEvent.click(decBtn)
+        expect(store.getActions()[0]).toStrictEqual(decrementProduct(2))
+    })
+
+    it('removes product when dec with quantity 1', () => {
+        render(
+            <Provider store={store}>
+                {mockTable(<ProductRow product={{id: 1}}/>)}
+            </Provider>
+        )
+        const decBtn = screen.getByTitle(/decrement/i)
+        fireEvent.click(decBtn)
+        expect(store.getActions()[0]).toStrictEqual(deleteProduct(1))
     })
 
 })
