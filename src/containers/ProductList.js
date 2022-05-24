@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import ProductCard from "../components/ProductCard";
 import {connect} from "react-redux";
-import {requestLoadProducts} from "../store/shopping/actions";
-import {CardGroup, Collapse, Fade, Row, Spinner} from "react-bootstrap";
+import {CardGroup, Collapse, Row, Spinner} from "react-bootstrap";
 
 export class ProductList extends Component {
     constructor(props) {
